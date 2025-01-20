@@ -1,0 +1,3 @@
+com/geolocation/controller/health/HealthTest.class
+com/geolocation/service/GeoLocationServiceTest.class
+com/geolocation/controller/geolocation/GeoLocationControllerTest.class

@@ -1,0 +1,20 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+
+  adminConnectors:
+    - type: http
+      port: 8081
+
+database:
+  driverClass: com.mysql.cj.jdbc.Driver
+  user: root
+  password: root@12345
+  url: jdbc:mysql://localhost:3306/geolocation
+  maxSize: 5
+  minSize: 1
+  properties:
+    hibernate.hbm2ddl.auto: update
+
+geoLocationUrl: "http://ip-api.com/json/"
