@@ -40,9 +40,9 @@ public class GeoLocationService {
         cache = CacheBuilder.newBuilder()
                 .maximumSize(CACHE_MAX_SIZE)
                 .expireAfterAccess(CACHE_EXPIRATION_MINUTES, TimeUnit.MINUTES)
-                .build(new CacheLoader<String, Optional<GeoLocation>>() {
+                .build(new CacheLoader<>() {
                     @Override
-                    public Optional<GeoLocation> load(String ipAddress) throws Exception {
+                    public Optional<GeoLocation> load(String ipAddress) {
                         return findByIpAddressFromDatabase(ipAddress);
                     }
 
@@ -59,8 +59,7 @@ public class GeoLocationService {
     public Optional<GeoLocation> findByIpAddress(final String ipAddress) {
         try {
             Optional<GeoLocation> cachedGeoLocation = cache.get(ipAddress);
-            if (cachedGeoLocation.isEmpty()
-                    || DateUtil.checkIfCreatedDateIsPastFiveMinute(cachedGeoLocation.get().getCreatedDate())) {
+            if (DateUtil.checkIfCreatedDateIsPastFiveMinute(cachedGeoLocation.get().getCreatedDate())) {
                 return findByIpAddressFromDatabase(ipAddress);
             }
             return cachedGeoLocation;

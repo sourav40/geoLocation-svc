@@ -2,6 +2,7 @@ package com.geolocation.dao;
 
 import com.geolocation.entity.GeoLocation;
 import com.geolocation.util.DateUtil;
+import com.geolocation.util.GeoLocationUtility;
 import com.geolocation.util.JerseyClient;
 import io.dropwizard.hibernate.AbstractDAO;
 import jakarta.persistence.NoResultException;
@@ -58,7 +59,7 @@ public class GeoLocationDAO extends AbstractDAO<GeoLocation> {
              * by calling External API.
              */
             if (DateUtil.checkIfCreatedDateIsPastFiveMinute(geoLocation.getCreatedDate())) {
-                Optional<GeoLocation> updatedGeoLocation = fetchFromExternalAPI(geoLocationUrl, ipAddress, client, geoLocation.getId());
+                Optional<GeoLocation> updatedGeoLocation = fetchFromExternalAPI(geoLocationUrl, ipAddress, client, geoLocation);
                 return updatedGeoLocation;
             }
 
@@ -75,17 +76,33 @@ public class GeoLocationDAO extends AbstractDAO<GeoLocation> {
         }
     }
 
-    private Optional<GeoLocation> fetchFromExternalAPI(final String geoLocationUrl, final String ipAddress, Client client, Long id) {
+    /**
+     * Method to fetch the getLocation from External API and update the existing object if created_time is more the defined time interval.
+     *
+     * @param geoLocationUrl
+     * @param ipAddress
+     * @param client
+     * @param geoLocation
+     * @return
+     */
+    private Optional<GeoLocation> fetchFromExternalAPI(final String geoLocationUrl, final String ipAddress, Client client, GeoLocation geoLocation) {
 
-        GeoLocation geoLocation = JerseyClient.fetchFromExternalAPI(geoLocationUrl, ipAddress, client);
+        GeoLocation fetchedGeoLocation = JerseyClient.fetchFromExternalAPI(geoLocationUrl, ipAddress, client);
 
-        if (geoLocation != null && SUCCESS.equals(geoLocation.getStatus())) {
-            geoLocation.setId((id == null) ? RandomGenerator.getDefault().nextLong() : id);
-            geoLocation.setIpAddress(ipAddress);
-            geoLocation.setCreatedDate(new Date());
-            save(geoLocation);
+        if (fetchedGeoLocation != null && SUCCESS.equals(fetchedGeoLocation.getStatus())) {
 
-            return Optional.ofNullable(geoLocation);
+            if (geoLocation != null) {
+                GeoLocationUtility.getUpdatedGeoLocation(geoLocation, fetchedGeoLocation);
+                geoLocation.setCreatedDate(new Date());
+                save(geoLocation);
+                return Optional.ofNullable(geoLocation);
+            } else {
+                fetchedGeoLocation.setId(RandomGenerator.getDefault().nextLong());
+                fetchedGeoLocation.setIpAddress(ipAddress);
+                fetchedGeoLocation.setCreatedDate(new Date());
+                save(fetchedGeoLocation);
+                return Optional.ofNullable(fetchedGeoLocation);
+            }
         }
         return null;
     }

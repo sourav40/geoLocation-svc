@@ -10,3 +10,4 @@ com/geolocation/config/GeoLocationConfiguration.class
 com/geolocation/util/JerseyClient.class
 com/geolocation/config/GeoLocationApplication$1.class
 com/geolocation/config/GeoLocationApplication.class
+com/geolocation/util/GeoLocationUtility.class

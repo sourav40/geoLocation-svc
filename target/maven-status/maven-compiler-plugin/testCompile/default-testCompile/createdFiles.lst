@@ -1,3 +1,4 @@
-com/geolocation/controller/health/HealthTest.class
 com/geolocation/service/GeoLocationServiceTest.class
+com/geolocation/controller/health/HealthTest.class
+com/geolocation/util/DateUtilTest.class
 com/geolocation/controller/geolocation/GeoLocationControllerTest.class
